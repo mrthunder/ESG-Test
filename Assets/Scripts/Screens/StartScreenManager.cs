@@ -35,7 +35,7 @@ public class StartScreenManager : MonoBehaviour
 
         if(PlayerNameInput != null && !string.IsNullOrEmpty(PlayerNameInput.text))
         {
-            GameInstance.Instance.PlayerName = PlayerNameInput.text;
+            GameInstance.Instance.CurrentGameData.Player.PlayerName = PlayerNameInput.text;
         }
 
         //TODO - Add game scene name to the string

@@ -45,7 +45,7 @@ public class GameController : MonoBehaviour
 	{
 		_playerInfoLoader = new PlayerInfoLoader();
 		_playerInfoLoader.OnLoaded += OnPlayerInfoLoaded;
-		_playerInfoLoader.Load(GameInstance.Instance.PlayerName);
+		_playerInfoLoader.Load(GameInstance.Instance.CurrentGameData.Player);
         _updateGameLoader = new UpdateGameLoader();
         _updateGameLoader.OnLoaded += OnGameUpdated;
     }

@@ -6,9 +6,9 @@ using UnityEngine;
 public class GameInstance : MonoBehaviour
 {
     private static GameInstance _instance = null;
-    public static GameInstance Instance => _instance;
+    public static GameInstance Instance => _instance ?? (new GameObject("[Game Instance]").AddComponent<GameInstance>());
 
-    public string PlayerName = "Player 1";
+    public GameData CurrentGameData = new GameData();
 
     void Awake()
     {

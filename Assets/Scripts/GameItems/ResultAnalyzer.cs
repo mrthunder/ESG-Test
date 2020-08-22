@@ -12,11 +12,11 @@ public class ResultAnalyzer
 {
 	public static Result GetResultState(UseableItem playerHand, UseableItem enemyHand)
 	{
-		if (isStronger(playerHand, enemyHand))
+		if (IsStronger(playerHand, enemyHand))
 		{
 			return Result.Won;
 		}
-		else if (isStronger(enemyHand, playerHand))
+		else if (IsStronger(enemyHand, playerHand))
 		{
 			return Result.Lost;
 		}
@@ -25,8 +25,8 @@ public class ResultAnalyzer
 			return Result.Draw;
 		}
 	}
-
-	private static bool isStronger (UseableItem firstHand, UseableItem secondHand)
+	//FIX - I fixing the methods naming inconsistencies 
+	private static bool IsStronger (UseableItem firstHand, UseableItem secondHand)
 	{
 		switch (firstHand)
 		{

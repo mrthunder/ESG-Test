@@ -4,15 +4,19 @@ using System;
 
 public class Player
 {
+	public const string PLAYER_DATA_KEY_ID = "userId";
+	public const string PLAYER_DATA_KEY_NAME = "name";
+	public const string PLAYER_DATA_KEY_COINS = "coins";
+
 	private int _userId;
 	private string _name;
 	private int _coins;
 
 	public Player(Hashtable playerData)
 	{
-		_userId = (int)playerData["userId"];
-		_name = playerData["name"].ToString (); 
-		_coins = (int)playerData["coins"];
+		_userId = (int)playerData[PLAYER_DATA_KEY_ID];
+		_name = playerData[PLAYER_DATA_KEY_NAME].ToString(); 
+		_coins = (int)playerData[PLAYER_DATA_KEY_COINS];
 	}
 	
 	public int GetUserId()

@@ -4,24 +4,24 @@ using System;
 
 public class UpdateGameLoader
 {
+
+	public const string GAME_DATA_KEY_PLAYER_RESULT = "resultPlayer";
+	public const string GAME_DATA_KEY_OPPONENT_RESULT = "resultOpponent";
+	public const string GAME_DATA_KEY_COINS_AMOUNT_CHANGE = "coinsAmountChange";
+
 	public delegate void OnLoadedAction(Hashtable gameUpdateData);
 	public event OnLoadedAction OnLoaded;
 
-	private UseableItem _choice;
 
-	public UpdateGameLoader(UseableItem playerChoice)
+	public void Load(UseableItem playerChoice)
 	{
-		_choice = playerChoice;
-	}
-
-	public void load()
-	{
-		UseableItem opponentHand = (UseableItem)Enum.GetValues(typeof(UseableItem)).GetValue(UnityEngine.Random.Range(0, 4));
+		///FIX - Because the first option from the <see cref="UseableItem"/> is none the random range should be from 1 to 4. Not starting from 0
+		UseableItem opponentHand = (UseableItem)Enum.GetValues(typeof(UseableItem)).GetValue(UnityEngine.Random.Range(1, 4));
 
 		Hashtable mockGameUpdate = new Hashtable();
-		mockGameUpdate["resultPlayer"] = _choice;
-		mockGameUpdate["resultOpponent"] = opponentHand;
-		mockGameUpdate["coinsAmountChange"] = GetCoinsAmount(_choice, opponentHand);
+		mockGameUpdate[GAME_DATA_KEY_PLAYER_RESULT] = playerChoice;
+		mockGameUpdate[GAME_DATA_KEY_OPPONENT_RESULT] = opponentHand;
+		mockGameUpdate[GAME_DATA_KEY_COINS_AMOUNT_CHANGE] = GetCoinsAmount(playerChoice, opponentHand);
 		
 		OnLoaded(mockGameUpdate);
 	}
@@ -42,7 +42,5 @@ public class UpdateGameLoader
 		{
 			return 0;
 		}
-
-		return 0;
 	}
 }

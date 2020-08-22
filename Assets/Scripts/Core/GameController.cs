@@ -6,26 +6,49 @@ using System;
 
 public class GameController : MonoBehaviour
 {
-	public Text playerHand;
-	public Text enemyHand;
+	//UI
+	[Space(10), SerializeField, Header("UI Components")]
+	private Text _playerHand = null;
+	[SerializeField]
+	private Text _enemyHand = null;
+	[Space(10),SerializeField, Header("Labels")]
+	private Text _nameLabel = null;
+	[SerializeField]
+	private Text _moneyLabel = null;
 
-	private Text _nameLabel;
-	private Text _moneyLabel;
-
-	private Player _player;
+	private Player _player = null;
+	private PlayerInfoLoader _playerInfoLoader = null;
+	private UpdateGameLoader _updateGameLoader = null;
 
 	void Awake()
 	{
-		_nameLabel = transform.Find ("Canvas/Name").GetComponent<Text>();
-		_moneyLabel = transform.Find ("Canvas/Money").GetComponent<Text>();
+#if UNITY_EDITOR
+		Debug.Assert(_playerHand, "The <color='blue'><b>player hand</b></color> is missing check if the text was assigned correctly.");
+		Debug.Assert(_enemyHand, "The <color='blue'><b>enemy hand</b></color> is missing check if the text was assigned correctly.");
+		Debug.Assert(_nameLabel, "The <color='blue'><b>name label</b></color> is missing check if the text was assigned correctly.");
+		Debug.Assert(_moneyLabel, "The <color='blue'><b>money label</b></color> is missing check if the text was assigned correctly.");
+#endif
 	}
+
+#if UNITY_EDITOR
+	[ContextMenu("Find Texts in the Scene")]
+	private void FindTextInScene()
+    {
+		_playerHand = GameObject.Find("Player Hand")?.GetComponent<Text>();
+		_enemyHand = GameObject.Find("Enemy Hand")?.GetComponent<Text>();
+		_nameLabel = GameObject.Find("Name")?.GetComponent<Text>();
+		_moneyLabel = GameObject.Find("Money")?.GetComponent<Text>();
+    }
+#endif
 
 	void Start()
 	{
-		PlayerInfoLoader playerInfoLoader = new PlayerInfoLoader();
-		playerInfoLoader.OnLoaded += OnPlayerInfoLoaded;
-		playerInfoLoader.load();
-	}
+		_playerInfoLoader = new PlayerInfoLoader();
+		_playerInfoLoader.OnLoaded += OnPlayerInfoLoaded;
+		_playerInfoLoader.Load();
+        _updateGameLoader = new UpdateGameLoader();
+        _updateGameLoader.OnLoaded += OnGameUpdated;
+    }
 
 	void Update()
 	{
@@ -65,17 +88,15 @@ public class GameController : MonoBehaviour
 
 	private void UpdateGame(UseableItem playerChoice)
 	{
-		UpdateGameLoader updateGameLoader = new UpdateGameLoader(playerChoice);
-		updateGameLoader.OnLoaded += OnGameUpdated;
-		updateGameLoader.load();
+		_updateGameLoader.Load(playerChoice);
 	}
 
 	public void OnGameUpdated(Hashtable gameUpdateData)
 	{
-		playerHand.text = DisplayResultAsText((UseableItem)gameUpdateData["resultPlayer"]);
-		enemyHand.text = DisplayResultAsText((UseableItem)gameUpdateData["resultOpponent"]);
+		_playerHand.text = DisplayResultAsText((UseableItem)gameUpdateData[UpdateGameLoader.GAME_DATA_KEY_PLAYER_RESULT]);
+		_enemyHand.text = DisplayResultAsText((UseableItem)gameUpdateData[UpdateGameLoader.GAME_DATA_KEY_OPPONENT_RESULT]);
 
-		_player.ChangeCoinAmount((int)gameUpdateData["coinsAmountChange"]);
+		_player.ChangeCoinAmount((int)gameUpdateData[UpdateGameLoader.GAME_DATA_KEY_COINS_AMOUNT_CHANGE]);
 	}
 
 	private string DisplayResultAsText (UseableItem result)
@@ -92,4 +113,12 @@ public class GameController : MonoBehaviour
 
 		return "Nothing";
 	}
+
+    private void OnDestroy()
+    {
+		_playerInfoLoader.OnLoaded -= OnPlayerInfoLoaded;
+		_updateGameLoader.OnLoaded -= OnGameUpdated;
+	}
+
+
 }

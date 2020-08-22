@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using UnityEditor.PackageManager;
 
 public class Player
 {
@@ -18,6 +19,18 @@ public class Player
 		_name = playerData[PLAYER_DATA_KEY_NAME].ToString(); 
 		_coins = (int)playerData[PLAYER_DATA_KEY_COINS];
 	}
+
+	// I want to add the information of the player to the save data
+	public static implicit operator GameData.PlayerData(Player player)
+    {
+		if (player == null) return null;
+		return new GameData.PlayerData()
+		{
+			Id = player._userId,
+			PlayerName = player._name,
+			MoneyAmount = player._coins
+		};
+    }
 	
 	public int GetUserId()
 	{

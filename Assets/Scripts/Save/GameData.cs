@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using UnityEditor;
 
 [System.Serializable]
 public class GameData
@@ -9,8 +10,9 @@ public class GameData
     [System.Serializable]
     public class PlayerData
     {
+        public int Id = 1;
         public string PlayerName = "Player 1";
-        public int MoneyAmount = 50;
+        public int MoneyAmount = 100;
     }
 
     public PlayerData Player = new PlayerData();
@@ -25,12 +27,24 @@ public class GameData
         string finalPath = Path.Combine(path, FILE_NAME);
         if(!File.Exists(finalPath))
         {
-            File.Create(finalPath);
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            using (StreamWriter sw = new StreamWriter(File.Create(finalPath))) 
+            {
+                sw.Write(json);
+            }
+#if UNITY_EDITOR
+            AssetDatabase.Refresh();
+#endif
         }
-        using(StreamWriter sw = new StreamWriter(File.OpenWrite(finalPath)))
+        else
         {
-            sw.Write(json);
+            //I am rewriting the entire file with the new json
+            File.WriteAllText(finalPath, json);
         }
+        
     }
 
     public static GameData Load()
@@ -46,7 +60,23 @@ public class GameData
             }
             return data;
         }
-        return new GameData();
+        return null;
+    }
+
+    public static void ClearData()
+    {
+        string path = Application.streamingAssetsPath;
+        string finalPath = Path.Combine(path, FILE_NAME);
+        if (File.Exists(finalPath))
+        {
+            //Deletes both the file and meta
+            File.Delete(finalPath);
+            File.Delete($"{finalPath}.meta");
+        }
+#if UNITY_EDITOR
+        AssetDatabase.Refresh();
+        Debug.Log("<color='green'>File deleted!!!</color>");
+#endif
     }
     #endregion
 }

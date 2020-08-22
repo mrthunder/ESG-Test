@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
@@ -53,6 +54,7 @@ public class GameController : MonoBehaviour
 	void Update()
 	{
 		UpdateHud();
+
 	}
 
 	public void OnPlayerInfoLoaded(Hashtable playerData)
@@ -97,9 +99,25 @@ public class GameController : MonoBehaviour
 		_enemyHand.text = DisplayResultAsText((UseableItem)gameUpdateData[UpdateGameLoader.GAME_DATA_KEY_OPPONENT_RESULT]);
 
 		_player.ChangeCoinAmount((int)gameUpdateData[UpdateGameLoader.GAME_DATA_KEY_COINS_AMOUNT_CHANGE]);
+		//Updating the game instance player
+		GameInstance.Instance.CurrentGameData.Player = _player;
+		if(_player.GetCoins() == 0)
+        {
+			//GAME OVER
+			GameInstance.Instance.SaveGame();
+			SceneManager.LoadScene(SceneHelper.SCENE_NAME_GAME_OVER_SCREEN);
+		}
+		
 	}
 
-	private string DisplayResultAsText (UseableItem result)
+    private void OnApplicationQuit()
+    {
+		GameInstance.Instance.SaveGame();
+	}
+
+
+
+    private string DisplayResultAsText (UseableItem result)
 	{
 		switch (result)
 		{

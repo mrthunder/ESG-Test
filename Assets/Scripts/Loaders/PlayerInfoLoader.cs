@@ -12,8 +12,7 @@ public class PlayerInfoLoader
 	{
 		//TODO - inspect this function
 		Hashtable mockPlayerData = new Hashtable();
-		mockPlayerData[Player.PLAYER_DATA_KEY_ID] = 1;
-		//TODO - Let the player write their own name
+		mockPlayerData[Player.PLAYER_DATA_KEY_ID] = data.Id;
 		mockPlayerData[Player.PLAYER_DATA_KEY_NAME] = data.PlayerName;
 		mockPlayerData[Player.PLAYER_DATA_KEY_COINS] = data.MoneyAmount;
 

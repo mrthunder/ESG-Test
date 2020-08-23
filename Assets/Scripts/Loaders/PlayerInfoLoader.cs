@@ -10,7 +10,6 @@ public class PlayerInfoLoader
 	//FIX - I fixing the methods naming inconsistencies 
 	public void Load(GameData.PlayerData data)
 	{
-		//TODO - inspect this function
 		Hashtable mockPlayerData = new Hashtable();
 		mockPlayerData[Player.PLAYER_DATA_KEY_ID] = data.Id;
 		mockPlayerData[Player.PLAYER_DATA_KEY_NAME] = data.PlayerName;

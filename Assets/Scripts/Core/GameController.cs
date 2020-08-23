@@ -15,19 +15,32 @@ public class GameController : MonoBehaviour
 	[Space(10),SerializeField, Header("Labels")]
 	private Text _nameLabel = null;
 	[SerializeField]
-	private Text _moneyLabel = null;
+	private Text _playerBetLabel = null;
+	[SerializeField]
+	private Text _enemyBetLabel = null;
+	[SerializeField]
+	private Text _resultLabel = null;
 
 	private Player _player = null;
 	private PlayerInfoLoader _playerInfoLoader = null;
 	private UpdateGameLoader _updateGameLoader = null;
 
+	private int _bet = 0;
+
+	private string _playerHandResult = string.Empty;
+	private string _opponentHandResult = string.Empty;
+	private string _gameResult = string.Empty;
+	[SerializeField]
+	//In seconds
+	private float _resultInterval = 2f;
+	private WaitForSeconds _resultWaitInterval = null;
 	void Awake()
 	{
 #if UNITY_EDITOR
 		Debug.Assert(_playerHand, "The <color='blue'><b>player hand</b></color> is missing check if the text was assigned correctly.");
 		Debug.Assert(_enemyHand, "The <color='blue'><b>enemy hand</b></color> is missing check if the text was assigned correctly.");
 		Debug.Assert(_nameLabel, "The <color='blue'><b>name label</b></color> is missing check if the text was assigned correctly.");
-		Debug.Assert(_moneyLabel, "The <color='blue'><b>money label</b></color> is missing check if the text was assigned correctly.");
+		//TODO - Add other texts
 #endif
 	}
 
@@ -35,11 +48,12 @@ public class GameController : MonoBehaviour
 	[ContextMenu("Find Texts in the Scene")]
 	private void FindTextInScene()
     {
-		_playerHand = GameObject.Find("Player Hand")?.GetComponent<Text>();
-		_enemyHand = GameObject.Find("Enemy Hand")?.GetComponent<Text>();
-		_nameLabel = GameObject.Find("Name")?.GetComponent<Text>();
-		_moneyLabel = GameObject.Find("Money")?.GetComponent<Text>();
-    }
+		//TODO - Fix this area
+		//_playerHand = GameObject.Find("Player Hand")?.GetComponent<Text>();
+		//_enemyHand = GameObject.Find("Enemy Hand")?.GetComponent<Text>();
+		//_nameLabel = GameObject.Find("Name")?.GetComponent<Text>();
+		//TODO - Add other texts
+	}
 #endif
 
 	void Start()
@@ -49,27 +63,48 @@ public class GameController : MonoBehaviour
 		_playerInfoLoader.Load(GameInstance.Instance.CurrentGameData.Player);
         _updateGameLoader = new UpdateGameLoader();
         _updateGameLoader.OnLoaded += OnGameUpdated;
-    }
 
-	void Update()
-	{
-		UpdateHud();
+		//Displaying the player's name
+		_nameLabel.text = "Name: " + _player.GetName();
 
+		_resultWaitInterval = new WaitForSeconds(_resultInterval);
 	}
+
+	
 
 	public void OnPlayerInfoLoaded(Hashtable playerData)
 	{
 		_player = new Player(playerData);
 	}
 
-	public void UpdateHud()
-	{
-		_nameLabel.text = "Name: " + _player.GetName();
-		_moneyLabel.text = "Money: $" + _player.GetCoins().ToString();
-	}
+	public IEnumerator GameLoop()
+    {
+		_resultLabel.text = "Rock!!";
+		yield return _resultWaitInterval;
+		_resultLabel.text = "Paper!!";
+		yield return _resultWaitInterval;
+		_resultLabel.text = "Scissors!!";
+		yield return _resultWaitInterval;
+		_resultLabel.text = "Go!!";
+		_playerHand.text = _playerHandResult;
+		_enemyHand.text = _opponentHandResult;
+		yield return _resultWaitInterval;
+		_resultLabel.text = _gameResult;
+		yield return null;
+        GameInstance.Instance.CurrentGameData.Player = _player;
+        if (_player.GetCoins() == 0)
+        {
+            //GAME OVER
+            SceneManager.LoadScene(SceneHelper.SCENE_NAME_GAME_OVER_SCREEN);
+        }
+    }
+	
 
 	public void HandlePlayerInput(int item)
 	{
+		// To play you need to bet
+		if (_bet == 0) return;
+
 		UseableItem playerChoice = UseableItem.None;
 
 		switch (item)
@@ -88,26 +123,52 @@ public class GameController : MonoBehaviour
 		UpdateGame(playerChoice);
 	}
 
+	public void ChangeBet(int amount)
+    {
+		// The player cannot bet more than it has
+		_bet = Mathf.Clamp(_bet + amount, 0, GameInstance.Instance.CurrentGameData.Player.MoneyAmount);
+		if(_playerBetLabel != null)
+        {
+			_playerBetLabel.text = $"${_bet}";
+        }
+		if(_enemyBetLabel != null)
+        {
+			//The enemy will always match your bet.
+			_enemyBetLabel.text = $"${_bet}";
+		}
+    }
+
+	public void QuitGame()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
+    }
+
+    public void GotoLobby()
+    {
+		SceneManager.LoadScene(SceneHelper.SCENE_NAME_LOBBY_SCREEN);
+    }
+
 	private void UpdateGame(UseableItem playerChoice)
 	{
-		_updateGameLoader.Load(playerChoice);
+        _resultLabel.text = "Make your Bet!!";
+        _playerHand.text = string.Empty;
+		_enemyHand.text = string.Empty;
+        _updateGameLoader.Load(playerChoice);
 	}
 
 	public void OnGameUpdated(Hashtable gameUpdateData)
 	{
-		_playerHand.text = DisplayResultAsText((UseableItem)gameUpdateData[UpdateGameLoader.GAME_DATA_KEY_PLAYER_RESULT]);
-		_enemyHand.text = DisplayResultAsText((UseableItem)gameUpdateData[UpdateGameLoader.GAME_DATA_KEY_OPPONENT_RESULT]);
-
+		_playerHandResult = DisplayResultAsText((UseableItem)gameUpdateData[UpdateGameLoader.GAME_DATA_KEY_PLAYER_RESULT]);
+		_opponentHandResult = DisplayResultAsText((UseableItem)gameUpdateData[UpdateGameLoader.GAME_DATA_KEY_OPPONENT_RESULT]);
+		_gameResult = $"You {gameUpdateData[UpdateGameLoader.GAME_DATA_KEY_RESULT]}";
 		_player.ChangeCoinAmount((int)gameUpdateData[UpdateGameLoader.GAME_DATA_KEY_COINS_AMOUNT_CHANGE]);
 		//Updating the game instance player
-		GameInstance.Instance.CurrentGameData.Player = _player;
-		if(_player.GetCoins() == 0)
-        {
-			//GAME OVER
-			GameInstance.Instance.SaveGame();
-			SceneManager.LoadScene(SceneHelper.SCENE_NAME_GAME_OVER_SCREEN);
-		}
-		
+
+		StartCoroutine(GameLoop());
 	}
 
 

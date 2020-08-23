@@ -8,6 +8,7 @@ public class UpdateGameLoader
 	public const string GAME_DATA_KEY_PLAYER_RESULT = "resultPlayer";
 	public const string GAME_DATA_KEY_OPPONENT_RESULT = "resultOpponent";
 	public const string GAME_DATA_KEY_COINS_AMOUNT_CHANGE = "coinsAmountChange";
+	public const string GAME_DATA_KEY_RESULT = "gameResult";
 
 	public delegate void OnLoadedAction(Hashtable gameUpdateData);
 	public event OnLoadedAction OnLoaded;
@@ -21,15 +22,16 @@ public class UpdateGameLoader
 		Hashtable mockGameUpdate = new Hashtable();
 		mockGameUpdate[GAME_DATA_KEY_PLAYER_RESULT] = playerChoice;
 		mockGameUpdate[GAME_DATA_KEY_OPPONENT_RESULT] = opponentHand;
-		mockGameUpdate[GAME_DATA_KEY_COINS_AMOUNT_CHANGE] = GetCoinsAmount(playerChoice, opponentHand);
-		
+		Result drawResult = ResultAnalyzer.GetResultState(playerChoice, opponentHand);
+		mockGameUpdate[GAME_DATA_KEY_COINS_AMOUNT_CHANGE] = GetCoinsAmount(drawResult);
+		mockGameUpdate[GAME_DATA_KEY_RESULT] = drawResult.ToString();
+
+
 		OnLoaded(mockGameUpdate);
 	}
 
-	private int GetCoinsAmount (UseableItem playerHand, UseableItem opponentHand)
+	private int GetCoinsAmount (Result drawResult)
 	{
-		Result drawResult = ResultAnalyzer.GetResultState(playerHand, opponentHand);
-
 		if (drawResult.Equals (Result.Won))
 		{
 			return 10;

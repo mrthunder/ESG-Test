@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-
-public enum UseableItem
+﻿public enum UseableItem
 {
 	None,
 	Rock,

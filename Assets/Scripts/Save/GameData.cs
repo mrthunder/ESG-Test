@@ -1,8 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using System.IO;
-using UnityEditor;
 using System.Threading.Tasks;
 using System;
 
@@ -43,7 +40,7 @@ public class GameData
                 sw.Write(json);
             }
 #if UNITY_EDITOR
-            AssetDatabase.Refresh();
+            UnityEditor.AssetDatabase.Refresh();
 #endif
         }
         else
@@ -82,7 +79,7 @@ public class GameData
             File.Delete($"{finalPath}.meta");
         }
 #if UNITY_EDITOR
-        AssetDatabase.Refresh();
+        UnityEditor.AssetDatabase.Refresh();
         Debug.Log("<color='green'>File deleted!!!</color>");
 #endif
     }

@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-using System;
-using UnityEditor.PackageManager;
+﻿using System.Collections;
 
 public class Player
 {

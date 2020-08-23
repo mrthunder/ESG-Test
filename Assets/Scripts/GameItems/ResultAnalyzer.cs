@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-
-public enum Result
+﻿public enum Result
 {
 	Won,
 	Lost,

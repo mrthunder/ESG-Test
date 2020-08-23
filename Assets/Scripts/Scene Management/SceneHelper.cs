@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class SceneHelper
+﻿public class SceneHelper
 {
     // The first screen where the player can enter their name
     public const string SCENE_NAME_START_SCREEN = "Start Menu";

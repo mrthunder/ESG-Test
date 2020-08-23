@@ -23,7 +23,7 @@ jobs:
           - StandaloneWindows
           - StandaloneOSX
         unityVersion:
-          - 2020.0.1f1
+          - 2020.1.0f1
     steps:
       - uses: actions/checkout@v2
       - uses: actions/cache@v2.1.1

@@ -55,7 +55,7 @@ public class StartScreenManager : MonoBehaviour
             GameInstance.Instance.SaveGame();
         }
 
-        SceneManager.LoadScene(SceneHelper.SCENE_NAME_GAME_SCREEN);
+        SceneManager.LoadScene(SceneHelper.SCENE_NAME_LOBBY_SCREEN);
     }
 
     public void HideNewPlayerPanel()

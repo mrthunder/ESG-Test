@@ -4,6 +4,7 @@ using UnityEngine;
 using System.IO;
 using UnityEditor;
 using System.Threading.Tasks;
+using System;
 
 [System.Serializable]
 public class GameData
@@ -15,6 +16,11 @@ public class GameData
         public string PlayerName = "Player 1";
         public int MoneyAmount = 100;
     }
+    // The player gets money over time. This is the last time that their should received
+    // any money
+    public DateTime LastTimeRewardReceived = DateTime.UtcNow.AddMinutes(HeaderDisplay.MINUTE_INCREMENT);
+
+    public bool ShouldPlayLobbyTutorial = true;
 
     public PlayerData Player = new PlayerData();
 

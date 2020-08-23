@@ -61,4 +61,11 @@ public class GameInstance : MonoBehaviour
         _isNewPlayer = true;
         _currentGameData = new GameData();
     }
+
+    private void OnApplicationQuit()
+    {
+        SaveGame();
+    }
+
+
 }

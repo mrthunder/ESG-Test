@@ -85,7 +85,7 @@ public class StartScreenManager : MonoBehaviour
             }
             else
             {
-                SceneManager.LoadScene(SceneHelper.SCENE_NAME_GAME_SCREEN);
+                SceneManager.LoadScene(SceneHelper.SCENE_NAME_LOBBY_SCREEN);
             }
         }
     }

@@ -110,12 +110,6 @@ public class GameController : MonoBehaviour
 		
 	}
 
-    private void OnApplicationQuit()
-    {
-		GameInstance.Instance.SaveGame();
-	}
-
-
 
     private string DisplayResultAsText (UseableItem result)
 	{

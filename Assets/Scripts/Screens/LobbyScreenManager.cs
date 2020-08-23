@@ -6,26 +6,24 @@ using UnityEngine.SceneManagement;
 
 public class LobbyScreenManager : MonoBehaviour
 {
-    // TODO - add similar variable to game data
     private bool _shouldPlayTutorial = false;
     public PlayableDirector TutorialPrefab = null;
     // Start is called before the first frame update
     void Start()
     {
-        // TODO - Check with game data the value of the should play tutorial variable
-        // _shouldPlayTutorial = GameInstance.CurrentGameData.ShouldPlayLobbyTutorial;
-        if(_shouldPlayTutorial && TutorialPrefab != null)
-        {
-            // Instantiate the tutorial
-            var tutorial = Instantiate(TutorialPrefab, Vector3.zero, Quaternion.identity);
-            // Play the tutorial
-            tutorial.Play();
-            // Once the tutorial is finished, destroy the object
-            tutorial.stopped += _ =>
-             {
-                 Destroy(tutorial.gameObject);
-             };
-        }
+        _shouldPlayTutorial = GameInstance.Instance.CurrentGameData.ShouldPlayLobbyTutorial;
+        //if(_shouldPlayTutorial && TutorialPrefab != null)
+        //{
+        //    // Instantiate the tutorial
+        //    var tutorial = Instantiate(TutorialPrefab, Vector3.zero, Quaternion.identity);
+        //    // Play the tutorial
+        //    tutorial.Play();
+        //    // Once the tutorial is finished, destroy the object
+        //    tutorial.stopped += _ =>
+        //     {
+        //         Destroy(tutorial.gameObject);
+        //     };
+        //}
     }
 
     public void PlayGame()

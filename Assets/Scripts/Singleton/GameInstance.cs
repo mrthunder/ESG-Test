@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,18 +19,26 @@ public class GameInstance : MonoBehaviour
     void Awake()
     {
         //Only one singleton can exist
-        if(this != _instance)
-        {
-            Destroy(gameObject);
-        }
-        if(_instance == null)
+        if (_instance == null)
         {
             _instance = this;
+        }else if (this != _instance)
+        {
+#if UNITY_EDITOR
+            Debug.Log($"Game Object: {gameObject.name} was deleted!!!");
+#endif
+            Destroy(gameObject);
         }
 
-        _currentGameData = GameData.Load();
 
-        if(_currentGameData != null)
+
+        DontDestroyOnLoad(gameObject);
+    }
+
+    public async void LoadData(Action onComplete)
+    {
+        _currentGameData = await GameData.Load();
+        if (_currentGameData != null)
         {
             _isNewPlayer = false;
         }
@@ -37,8 +46,8 @@ public class GameInstance : MonoBehaviour
         {
             _currentGameData = new GameData();
         }
-        
-        DontDestroyOnLoad(gameObject);
+        onComplete.Invoke();
+
     }
 
     public void SaveGame()

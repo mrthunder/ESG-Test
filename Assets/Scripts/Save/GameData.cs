@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using UnityEditor;
+using System.Threading.Tasks;
 
 [System.Serializable]
 public class GameData
@@ -47,7 +48,7 @@ public class GameData
         
     }
 
-    public static GameData Load()
+    public async static Task<GameData> Load()
     {
         string path = Application.streamingAssetsPath;
         string finalPath = Path.Combine(path, FILE_NAME);
@@ -56,7 +57,8 @@ public class GameData
             GameData data;
             using(StreamReader sr = new StreamReader(File.OpenRead(finalPath)))
             {
-                data = JsonUtility.FromJson<GameData>(sr.ReadToEnd());
+                string json = await sr.ReadToEndAsync();
+                data = JsonUtility.FromJson<GameData>(json);
             }
             return data;
         }

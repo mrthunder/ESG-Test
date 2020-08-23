@@ -1,0 +1,42 @@
+# I am just using this workflow to generate builds as I push to the master branch. I am making a mac build, because the project that I received was ziped on a mac, so I though
+# it would be easier to you.
+
+name: Build Game
+
+on:
+  push:
+    branches: [ master ]
+    tags: 
+      - v1
+env:
+  License: ${{ secrets.UNITY_LICENSE }}
+
+jobs:
+  build-game:
+    name: Building the Game
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        targetPlatforms: 
+          - StandaloneWindows64
+          - StandaloneWindows
+          - StandaloneOSX
+        unityVersion:
+          - 2020.0.1f1
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2.1.1
+        with:
+          path: Library
+          key: Library-${{ matrix.targetPlatform }}
+          restore-keys: |
+            Library-
+      - uses: webbertakken/unity-builder@v1.2
+        with:
+          targetPlatform: ${{ matrix.targetPlatforms }}
+          unityVersion: ${{ matrix.unityVersion }}
+      - uses: actions/upload-artifact@v2.1.4
+        with:
+          name: Build
+          path: build

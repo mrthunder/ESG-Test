@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
@@ -11,6 +12,7 @@ public class LobbyScreenManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // TODO - Decide if you need to implement a tutorial...
         _shouldPlayTutorial = GameInstance.Instance.CurrentGameData.ShouldPlayLobbyTutorial;
         //if(_shouldPlayTutorial && TutorialPrefab != null)
         //{
@@ -28,6 +30,10 @@ public class LobbyScreenManager : MonoBehaviour
 
     public void PlayGame()
     {
+        if (GameInstance.Instance.CurrentGameData.Player.MoneyAmount == 0)
+        {
+            return;
+        }
         SceneManager.LoadScene(SceneHelper.SCENE_NAME_GAME_SCREEN);
     }
 

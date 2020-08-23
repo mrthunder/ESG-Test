@@ -30,31 +30,12 @@ public class GameController : MonoBehaviour
 	private string _playerHandResult = string.Empty;
 	private string _opponentHandResult = string.Empty;
 	private string _gameResult = string.Empty;
-	[SerializeField]
+	[Space(10), SerializeField, Header("Time Intervals")]
 	//In seconds
 	private float _resultInterval = 2f;
 	private WaitForSeconds _resultWaitInterval = null;
-	void Awake()
-	{
-#if UNITY_EDITOR
-		Debug.Assert(_playerHand, "The <color='blue'><b>player hand</b></color> is missing check if the text was assigned correctly.");
-		Debug.Assert(_enemyHand, "The <color='blue'><b>enemy hand</b></color> is missing check if the text was assigned correctly.");
-		Debug.Assert(_nameLabel, "The <color='blue'><b>name label</b></color> is missing check if the text was assigned correctly.");
-		//TODO - Add other texts
-#endif
-	}
 
-#if UNITY_EDITOR
-	[ContextMenu("Find Texts in the Scene")]
-	private void FindTextInScene()
-    {
-		//TODO - Fix this area
-		//_playerHand = GameObject.Find("Player Hand")?.GetComponent<Text>();
-		//_enemyHand = GameObject.Find("Enemy Hand")?.GetComponent<Text>();
-		//_nameLabel = GameObject.Find("Name")?.GetComponent<Text>();
-		//TODO - Add other texts
-	}
-#endif
+
 
 	void Start()
 	{
@@ -103,7 +84,11 @@ public class GameController : MonoBehaviour
 	public void HandlePlayerInput(int item)
 	{
 		// To play you need to bet
-		if (_bet == 0) return;
+		if (_bet == 0)
+        {
+			_resultLabel.text = "Make a bet to play!";
+			return;
+        }
 
 		UseableItem playerChoice = UseableItem.None;
 
@@ -157,7 +142,7 @@ public class GameController : MonoBehaviour
         _resultLabel.text = "Make your Bet!!";
         _playerHand.text = string.Empty;
 		_enemyHand.text = string.Empty;
-        _updateGameLoader.Load(playerChoice);
+        _updateGameLoader.Load(playerChoice, _bet);
 	}
 
 	public void OnGameUpdated(Hashtable gameUpdateData)
@@ -166,7 +151,6 @@ public class GameController : MonoBehaviour
 		_opponentHandResult = DisplayResultAsText((UseableItem)gameUpdateData[UpdateGameLoader.GAME_DATA_KEY_OPPONENT_RESULT]);
 		_gameResult = $"You {gameUpdateData[UpdateGameLoader.GAME_DATA_KEY_RESULT]}";
 		_player.ChangeCoinAmount((int)gameUpdateData[UpdateGameLoader.GAME_DATA_KEY_COINS_AMOUNT_CHANGE]);
-		//Updating the game instance player
 
 		StartCoroutine(GameLoop());
 	}

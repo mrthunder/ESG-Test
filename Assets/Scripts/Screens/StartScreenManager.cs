@@ -89,4 +89,9 @@ public class StartScreenManager : MonoBehaviour
             }
         }
     }
+
+    public void DeselecteEverything()
+    {
+        CanvasEventSystem.SetSelectedGameObject(null);
+    }
 }

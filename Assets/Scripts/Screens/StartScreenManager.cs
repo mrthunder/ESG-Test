@@ -2,65 +2,83 @@
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 
 public class StartScreenManager : MonoBehaviour
 {
-    [Header("Input Fields"),Header("UI Components")]
+    [Header("Input Fields"),Header("UI Components"), SerializeField, FormerlySerializedAs("PlayerNameInput")]
     // The player can type their name here and I will forward to the game
-    public InputField PlayerNameInput = null;
-    [Header("Buttons")]
+    private InputField _playerNameInput = null;
+    [Header("Buttons"), SerializeField, FormerlySerializedAs("StartButton")]
     // I am getting the reference to the button to make non interactable once clicked
-    public Button StartButton = null;
-    public Button ClearDataButton = null;
-    [Header("Panels")]
-    public GameObject NewUserPanel = null;
-    [Space(10), Header("Event System")]
-    public EventSystem CanvasEventSystem = null;
+    private Button _startButton = null;
+    [SerializeField, FormerlySerializedAs("ClearDataButton")]
+    // This is the button that once clicked will clear the game data
+    private Button _clearDataButton = null;
+    [Header("Panels"), SerializeField, FormerlySerializedAs("NewUserPanel")]
+    // This is the panel where the user can type their name
+    private GameObject _newUserPanel = null;
+    [Space(10), Header("Event System"), SerializeField, FormerlySerializedAs("CanvasEventSystem")]
+    // I am using the event system to set the selected button.
+    private EventSystem _canvasEventSystem = null;
 
 
 #if UNITY_EDITOR
     [ContextMenu("Find UI Objects")]
+    // This is to find all the objects that I am asking easily
     private void FindUIObjectsInTheScene()
     {
         const string path = "Canvas/Panel/";
-        NewUserPanel = GameObject.Find($"{path}New User Panel");
-        PlayerNameInput = NewUserPanel.transform.Find($"PlayerName_Input")?.GetComponent<InputField>();
-        StartButton = NewUserPanel.transform.Find($"Start Button")?.GetComponent<Button>();
-        if (StartButton != null)
+        _newUserPanel = GameObject.Find($"{path}New User Panel");
+        _playerNameInput = _newUserPanel.transform.Find($"PlayerName_Input")?.GetComponent<InputField>();
+        _startButton = _newUserPanel.transform.Find($"Start Button")?.GetComponent<Button>();
+        if (_startButton != null)
         {
-            StartButton.onClick.AddListener(StartGame);
+            _startButton.onClick.AddListener(StartGame);
         }
-        ClearDataButton = GameObject.Find($"{path}Clear Data Button")?.GetComponent<Button>();
-        if(ClearDataButton != null)
+        _clearDataButton = GameObject.Find($"{path}Clear Data Button")?.GetComponent<Button>();
+        if(_clearDataButton != null)
         {
-            ClearDataButton.onClick.AddListener(ClearData);
+            _clearDataButton.onClick.AddListener(ClearData);
         }
-        CanvasEventSystem = FindObjectOfType<EventSystem>();
+        _canvasEventSystem = FindObjectOfType<EventSystem>();
     }
 #endif
 
+    /// <summary>
+    /// This is a method for the Start Game Button. It saves the name and moves the player to the lobby.
+    /// </summary>
     public void StartGame()
     {
-        if (StartButton != null)
+        if (_startButton != null)
         {
-            StartButton.interactable = false;
+            // This is just so the game does not receive multiple requests to change scene
+            _startButton.interactable = false;
         }
 
-        if (PlayerNameInput != null && !string.IsNullOrEmpty(PlayerNameInput.text))
+        if (_playerNameInput != null && !string.IsNullOrEmpty(_playerNameInput.text))
         {
-            GameInstance.Instance.CurrentGameData.Player.PlayerName = PlayerNameInput.text;
+            GameInstance.Instance.CurrentGameData.Player.PlayerName = _playerNameInput.text;
             GameInstance.Instance.SaveGame();
         }
 
         SceneManager.LoadScene(SceneHelper.SCENE_NAME_LOBBY_SCREEN);
     }
 
+    /// <summary>
+    /// This method is for the x button on the new player panel.
+    /// It hides the panel and deselects the input field.
+    /// </summary>
     public void HideNewPlayerPanel()
     {
-        NewUserPanel.SetActive(false);
-        CanvasEventSystem.SetSelectedGameObject(null);
+        _newUserPanel.SetActive(false);
+        _canvasEventSystem.SetSelectedGameObject(null);
     }
 
+    /// <summary>
+    /// This method is for the clear data button.
+    /// It clears the save data.
+    /// </summary>
     public void ClearData()
     {
         GameInstance.Instance.ClearData();
@@ -68,17 +86,18 @@ public class StartScreenManager : MonoBehaviour
 
     void Update()
     {
-        if (NewUserPanel.activeInHierarchy && PlayerNameInput != null && StartButton != null)
+        if (_newUserPanel.activeInHierarchy && _playerNameInput != null && _startButton != null)
         {
             //The player needs to type something in order to play the game
-            StartButton.interactable = (PlayerNameInput.text.Length > 0);
+            _startButton.interactable = (_playerNameInput.text.Length > 0);
         }
-        if (!NewUserPanel.activeInHierarchy && Input.GetKeyDown(KeyCode.Space))
+        // Once the player press space, either the player goes to the lobby or the new player panel pop up.
+        if (!_newUserPanel.activeInHierarchy && Input.GetKeyDown(KeyCode.Space))
         {
             if (GameInstance.Instance.IsNewPlayer)
             {
-                NewUserPanel.SetActive(true);
-                CanvasEventSystem.SetSelectedGameObject(PlayerNameInput.gameObject);
+                _newUserPanel.SetActive(true);
+                _canvasEventSystem.SetSelectedGameObject(_playerNameInput.gameObject);
             }
             else
             {
@@ -87,8 +106,12 @@ public class StartScreenManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// This method is for the input field. 
+    /// Once player press enter and leaves the input field, I deselects the input field. 
+    /// </summary>
     public void DeselecteEverything()
     {
-        CanvasEventSystem.SetSelectedGameObject(null);
+        _canvasEventSystem.SetSelectedGameObject(null);
     }
 }

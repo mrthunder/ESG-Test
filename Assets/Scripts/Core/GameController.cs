@@ -5,7 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
-	//UI
+	//UI - I changed components exposed to the inspector from public to private
+	// there is no need to keep them public, since no other class will access those variables.
 	[Space(10), SerializeField, Header("UI Components")]
 	private Text _playerHand = null;
 	[SerializeField]
@@ -17,35 +18,40 @@ public class GameController : MonoBehaviour
 	[SerializeField]
 	private Text _enemyBetLabel = null;
 	[SerializeField]
+	// This is the text in the middle that display rock, paper, scissors.
 	private Text _resultLabel = null;
 
 	private Player _player = null;
 	private PlayerInfoLoader _playerInfoLoader = null;
 	private UpdateGameLoader _updateGameLoader = null;
 
+	// I made the bet variable instead of fixed
 	private int _bet = 0;
 
+	// I store the result of the game in those variables to show after the coroutine finishes.
 	private string _playerHandResult = string.Empty;
 	private string _opponentHandResult = string.Empty;
 	private string _gameResult = string.Empty;
-	[Space(10), SerializeField, Header("Time Intervals")]
+	[Space(10), SerializeField, Header("Time Intervals"), Tooltip("In seconds")]
 	//In seconds
 	private float _resultInterval = 2f;
 	private WaitForSeconds _resultWaitInterval = null;
 
 
-
 	void Start()
 	{
+		// I move the update game loader initialization to here, to avoid garbage.
 		_playerInfoLoader = new PlayerInfoLoader();
 		_playerInfoLoader.OnLoaded += OnPlayerInfoLoaded;
 		_playerInfoLoader.Load(GameInstance.Instance.CurrentGameData.Player);
         _updateGameLoader = new UpdateGameLoader();
         _updateGameLoader.OnLoaded += OnGameUpdated;
 
+		// I am changing the name label only once instead of every frame.
 		//Displaying the player's name
 		_nameLabel.text = "Name: " + _player.GetName();
 
+		// I am going to reuse the wait for seconds in my coroutine
 		_resultWaitInterval = new WaitForSeconds(_resultInterval);
 	}
 
@@ -56,6 +62,7 @@ public class GameController : MonoBehaviour
 		_player = new Player(playerData);
 	}
 
+	// This will display the rock paper scissor text on the screen over time, and then display the result
 	public IEnumerator GameLoop()
     {
 		_resultLabel.text = "Rock!!";
@@ -121,6 +128,9 @@ public class GameController : MonoBehaviour
 		}
     }
 
+	/// <summary>
+	/// This method is for the Quit button. It quits the game or stop playing the game in the editor.
+	/// </summary>
 	public void QuitGame()
     {
 #if UNITY_EDITOR
@@ -130,6 +140,9 @@ public class GameController : MonoBehaviour
 #endif
     }
 
+	/// <summary>
+	/// This method is for the Lobby Button. Sends the player to the lobby.
+	/// </summary>
     public void GotoLobby()
     {
 		SceneManager.LoadScene(SceneHelper.SCENE_NAME_LOBBY_SCREEN);
@@ -137,6 +150,7 @@ public class GameController : MonoBehaviour
 
 	private void UpdateGame(UseableItem playerChoice)
 	{
+		// Restore the game to its initial state
         _resultLabel.text = "Make your Bet!!";
         _playerHand.text = string.Empty;
 		_enemyHand.text = string.Empty;
@@ -145,8 +159,10 @@ public class GameController : MonoBehaviour
 
 	public void OnGameUpdated(Hashtable gameUpdateData)
 	{
+		// Different from before, I am storing the result into string to display later.
 		_playerHandResult = DisplayResultAsText((UseableItem)gameUpdateData[UpdateGameLoader.GAME_DATA_KEY_PLAYER_RESULT]);
 		_opponentHandResult = DisplayResultAsText((UseableItem)gameUpdateData[UpdateGameLoader.GAME_DATA_KEY_OPPONENT_RESULT]);
+		// I am getting the game result here.
 		_gameResult = $"You {gameUpdateData[UpdateGameLoader.GAME_DATA_KEY_RESULT]}";
 		_player.ChangeCoinAmount((int)gameUpdateData[UpdateGameLoader.GAME_DATA_KEY_COINS_AMOUNT_CHANGE]);
 
@@ -169,6 +185,9 @@ public class GameController : MonoBehaviour
 		return "Nothing";
 	}
 
+	/// <summary>
+	/// When you changes scene and this object gets destroy, I am removing the events.
+	/// </summary>
     private void OnDestroy()
     {
 		_playerInfoLoader.OnLoaded -= OnPlayerInfoLoaded;

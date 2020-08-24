@@ -2,6 +2,7 @@
 
 public class Player
 {
+	// I created the consts to make the code more readable and consistent
 	public const string PLAYER_DATA_KEY_ID = "userId";
 	public const string PLAYER_DATA_KEY_NAME = "name";
 	public const string PLAYER_DATA_KEY_COINS = "coins";

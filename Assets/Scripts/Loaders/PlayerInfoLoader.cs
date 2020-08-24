@@ -5,6 +5,8 @@ public class PlayerInfoLoader
 	public delegate void OnLoadedAction(Hashtable playerData);
 	public event OnLoadedAction OnLoaded;
 
+	// I remove the constructor and gave the Load function the Player Data object to update the Hashtable, based on the save data
+
 	//FIX - I fixing the methods naming inconsistencies 
 	public void Load(GameData.PlayerData data)
 	{

@@ -1,16 +1,22 @@
 ﻿using System;
 using UnityEngine;
 
-
+/// <summary>
+/// This is a singleton. This class contains the game data, and it is the interface between the other classes to the game data
+/// </summary>
 public class GameInstance : MonoBehaviour
 {
+    // singleton instance
     private static GameInstance _instance = null;
-    public static GameInstance Instance => _instance ?? (new GameObject("[Game Instance]").AddComponent<GameInstance>());
+    // Singleton instance property. If I call the instance and their is no one in the scene, I create a new instance object.
+    public static GameInstance Instance => _instance ?? (_instance = new GameObject("[Game Instance]").AddComponent<GameInstance>());
 
     // The current data of the game
     private GameData _currentGameData = null;
+    // I use a property so the game data cannot be changed.
     public GameData CurrentGameData => _currentGameData;
 
+    //If is a new player, then it needs to create a game data
     private bool _isNewPlayer = true;
     public bool IsNewPlayer => _isNewPlayer;
 
@@ -27,12 +33,13 @@ public class GameInstance : MonoBehaviour
 #endif
             Destroy(gameObject);
         }
-
-
-
         DontDestroyOnLoad(gameObject);
     }
 
+    /// <summary>
+    /// Loads the game data, and call the callback once finished.
+    /// </summary>
+    /// <param name="onComplete">callback</param>
     public async void LoadData(Action onComplete)
     {
         _currentGameData = await GameData.Load();
@@ -48,11 +55,17 @@ public class GameInstance : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Saves the game data into a file
+    /// </summary>
     public void SaveGame()
     {
         GameData.Save(_currentGameData);
     }
 
+    /// <summary>
+    /// Delete the game data file and creates a new game data
+    /// </summary>
     public void ClearData()
     {
         GameData.ClearData();
@@ -60,6 +73,9 @@ public class GameInstance : MonoBehaviour
         _currentGameData = new GameData();
     }
 
+    /// <summary>
+    /// When the games exits, I save the game to the file
+    /// </summary>
     private void OnApplicationQuit()
     {
         SaveGame();

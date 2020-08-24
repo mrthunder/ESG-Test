@@ -1,4 +1,7 @@
-﻿public class SceneHelper
+﻿/// <summary>
+/// This class contains the name of all the scenes.
+/// </summary>
+public class SceneHelper
 {
     // The first screen where the player can enter their name
     public const string SCENE_NAME_START_SCREEN = "Start Menu";

@@ -13,8 +13,10 @@
 [Ll]ogs/
 [Uu]ser[Ss]ettings/
 [Aa]ssets/[Ss]treaming[Aa]ssets/
+[Aa]ssets/[Ss]treaming[Aa]ssets.meta
 
 *.sav
+*.sav.meta
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
 [Mm]emoryCaptures/

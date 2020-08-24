@@ -15,11 +15,19 @@ public class GameData
     }
     // The player gets money over time. This is the last time that their should received
     // any money
-    public DateTime LastTimeRewardReceived = DateTime.UtcNow.AddMinutes(HeaderDisplay.MINUTE_INCREMENT);
+    public long LastTimeRewardReceived;
 
-    public bool ShouldPlayLobbyTutorial = true;
+    public bool ShouldPlayLobbyTutorial;
 
-    public PlayerData Player = new PlayerData();
+    public PlayerData Player;
+
+    public GameData()
+    {
+        
+        LastTimeRewardReceived = DateTime.UtcNow.AddMinutes(HeaderDisplay.MINUTE_INCREMENT).ToFileTimeUtc();
+        ShouldPlayLobbyTutorial = true;
+        Player = new PlayerData();
+    }
 
     #region Save and Load
 
